@@ -1,0 +1,76 @@
+import os
+import requests
+from bs4 import BeautifulSoup
+from babel.numbers import format_currency
+import re
+os.system("clear")
+
+"""
+Use the 'format_currency' function to format the output of the conversion
+format_currency(AMOUNT, CURRENCY_CODE, locale="ko_KR" (no need to change this one))
+"""
+url = "https://www.iban.com/currency-codes"
+iban_result= requests.get(url)
+iban_soup= BeautifulSoup(iban_result.text, "html.parser")
+tds = iban_soup.find("tbody").find_all("tr" )
+lists_country= []
+lists_code=[]
+for A in tds:
+  lists_country.append(A.find("td").string.capitalize())
+for B in tds:
+  fadajie=(B.find_all("td"))
+  m=fadajie[2].text.strip()
+  lists_code.append(m)
+
+i=0
+while i < len(lists_country):
+  if lists_code[i] == '' :
+    del lists_code[i]
+    del lists_country[i]
+  else:
+    None
+  i+=1
+
+print("Welcome to CurrencyConvert Pro 2000")
+for n, c in  enumerate(lists_country):
+  print ("# {} {}".format(n, c))
+print("Where are you from? Choose a country by number.")
+print("")
+typing_1 = input("#: ")
+ch_country1 = lists_country[int(typing_1)]
+ch_code1 = lists_code[int(typing_1)]
+
+print(ch_country1)
+print("")
+print("Now choose another country.")
+print("")
+
+typing_2 = input("#: ")
+ch_country2 = lists_country[int(typing_2)]
+ch_code2 = lists_code[int(typing_2)]
+print(ch_country2)
+
+print("")
+print(f"How many {ch_code1} do you want to convert to {ch_code2}?")
+
+def convert():
+
+  ch_n = input()
+  if ch_n.isdigit() is True:
+    global ttt
+    URL= f"https://transferwise.com/gb/currency-converter/{ch_code1.lower()}-to-{ch_code2.lower()}-rate?amount={ch_n}"
+    URL_result= requests.get(URL)
+    result= BeautifulSoup(URL_result.text, "html.parser")
+    specific = result.find("td", {"value":"1"})
+    t= re.findall("\d+\.\d+", str(specific))
+    for tt in t:
+      tt=t[0]
+    ttt= float(tt)*float(ch_n)
+
+    print(format_currency(ch_n, str(ch_code1), locale="ko_KR")+" is "+format_currency(ttt, str(ch_code2), locale="ko_KR"))
+  else:
+    print("That wasn't a number.")
+    print("")
+    convert()
+
+convert()
