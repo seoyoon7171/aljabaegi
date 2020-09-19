@@ -4,6 +4,8 @@ import requests
 from bs4 import BeautifulSoup
 from save import save_to_file
 import re
+import csv
+
 
 
 os.system("clear")
@@ -13,6 +15,14 @@ group_company = {'name': '', 'jobs': []}
 
 company_names=[] #알바천국 타이틀
 company_urls =[]  #상세페이지 링크
+
+def save_to_file(group_company):
+
+  file = open(f"{group_company['name']}.csv", mode="w")
+  writer = csv.writer(file)
+  writer.writerow(["place", "title", "time", "pay", "date"])
+  for job in group_company['jobs']:
+    writer.writerow(list(job.values()))
 
 def main():
   result= requests.get(f"{alba_url}")
